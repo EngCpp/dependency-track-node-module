@@ -1,0 +1,110 @@
+#!/usr/bin/env node
+
+const dependencyTrack = require("../index.js");
+const fs = require("fs");
+const path = require("path");
+const xmlFormat = require("prettify-xml");
+const xmlOptions = {indent: 4, newline: "\n"};
+
+const ARGS_WHITELIST = ["-h", "-u", "-d", "-f", "-m", "-s", "--version"]
+const CONFIGS_WHITELIST = ["--apiKey", "--dependencyTrackBaseUrl",
+"--projectName", "--projectVersion", "--failOnError"]
+
+let arguments = process.argv.slice(2);
+let unknownOptions = arguments.filter(x => x.startsWith("-")).filter(x =>
+  !( ARGS_WHITELIST.includes(x) || CONFIGS_WHITELIST.includes(x) )
+);
+
+if (arguments.includes("-h") || arguments.length <= 0 || unknownOptions.length > 0) {
+    if (unknownOptions.length > 0) {
+        console.warn("ERROR: Unknown option(s) " + unknownOptions.join(" ") );
+    }
+    console.log("Usage:  dependency-track [OPTIONS] [path]");
+    console.log("Options:");
+    console.log("  -h        - this help");
+    console.log("  -u        - upload the bom");
+    console.log("  -d        - delete, delete the current or any arbitrary project from the server");
+    console.log("  -f        - findings, prints out some details of all of the current issues found in the scan");
+    console.log("  -m        - metrics, Get and print all metrics from the server");
+    console.log("  -s        - score, Get the Risk Score for the current project");
+    console.log("  --version - print version number");
+    process.exit(0);
+}
+
+// CONFIGS ---------------------------------------------------------------------
+
+let apiKey = arguments.indexOf("--apiKey");
+if (apiKey > -1) {
+  apiKey = arguments[apiKey + 1];
+}
+
+let dependencyTrackBaseUrl = arguments.indexOf("--dependencyTrackBaseUrl");
+if (dependencyTrackBaseUrl > -1) {
+  dependencyTrackBaseUrl = arguments[dependencyTrackBaseUrl + 1];
+}
+
+let projectName = arguments.indexOf("--projectName");
+if (projectName > -1) {
+  projectName = arguments[projectName + 1];
+}
+
+let projectVersion = arguments.indexOf("--projectVersion");
+if (projectVersion > -1) {
+  projectVersion = arguments[projectVersion + 1];
+}
+
+let failOnError = arguments.indexOf("--failOnError");
+if (failOnError > -1) {
+  failOnError = arguments[failOnError + 1];
+} else {
+  failOnError = false
+}
+
+// OPTIONS --------------------------------------------------------------------
+
+let upload = arguments.indexOf("-u");
+if (upload > -1) {
+    arguments = arguments.slice(0,upload).concat(arguments.slice(upload+2));
+    dependencyTrack.uploadbom(dependencyTrackBaseUrl, apiKey, projectName,
+      projectVersion, () => {
+          console.log("file uploaded");
+      });
+}
+
+let delProject = arguments.indexOf("-d");
+if (delProject > -1) {
+    console.warn("Delete not implemented yet!")
+    arguments = arguments.slice(0,delProject).concat(arguments.slice(delProject+1));
+}
+
+let findings = arguments.indexOf("-f");
+let out = null;
+if (findings > -1) {
+    console.warn("Find not implemented yet!")
+    // extract argument
+    out = arguments[findings+1];
+    arguments = arguments.slice(0,findings).concat(arguments.slice(findings+2));
+}
+
+let metrics = arguments.indexOf("-m");
+if (metrics > -1) {
+    console.warn("Metrics not implemented yet")
+    arguments = arguments.slice(0,metrics).concat(arguments.slice(metrics+1));
+}
+
+let score = arguments.indexOf("-s");
+while (score > -1) {
+    console.warn("Score not implemented yet")
+    arguments = arguments.slice(0,score).concat(arguments.slice(score+2));
+}
+
+let printVersion = arguments.indexOf("--version");
+if (printVersion > -1) {
+    const packageJsonAsString = fs.readFileSync(path.join(__dirname, '../', 'package.json'), "utf-8");
+    const packageJson = JSON.parse(packageJsonAsString);
+
+    console.log(packageJson.version);
+    process.exit(0);
+}
+
+let bomFile = arguments[0] || '.';
