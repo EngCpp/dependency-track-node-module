@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "form-data": "^3.0.0",
     "packageurl-js": "^0.0.1",
     "parse-packagejson-name": "^1.0.1",
     "prettify-xml": "^1.2.0",

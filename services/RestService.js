@@ -1,41 +1,69 @@
-const axios = require('axios')
+/** RestService is a layer of isolation for the rest client
+*  it makes life easier in case we want to replace axios with a different
+* rest client like jquery, pure node http, ember data etc ..
+*/
+const axios = require('axios');
+const config = require('../utils/Configurations').defaultConfigs;
 
-exports.postJson = (url, apiKey, bodyData) => {
-  const headers = {headers:{
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-Api-Key': apiKey
-  }}
+applyDefauls = () => {
+  axios.defaults.baseURL = config.baseUrl;
+  axios.defaults.headers.common['Content-Type'] = 'application/json';
+  axios.defaults.headers.common['Accept'] =  'application/json';
+  axios.defaults.headers.common['X-Api-Key'] = config.apiKey;
+}
+
+exports.post = (urlSuffix, bodyData) => {
+  applyDefauls();
 
   return new Promise((resolve, reject) => {
-            axios.post(url, bodyData, headers)
+            axios.post(urlSuffix, bodyData)
                  .then(response => {
                     const {data, status}  = response
-                    let statusOK = status >= 200 && status < 300
-
-                    resolve({"status":(statusOK?true:false), "data":data})
+                    resolve(data)
                }).catch(err => {
-                    resolve({"status":false, "data":err});
+                    console.log(err);
                })
-         })
+         });
 },
 
-exports.getJson = (url, apiKey, bodyData) => {
-  const headers  = {headers:{
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-Api-Key': apiKey
-  }}
+exports.put = (urlSuffix, bodyData) => {
+  applyDefauls();
 
   return new Promise((resolve, reject) => {
-      axios.get(url, bodyData, headers)
+            axios.put(urlSuffix, bodyData)
+                 .then(response => {
+                    const {data, status}  = response
+                    resolve(data)
+               }).catch(err => {
+                    console.log(err);
+               })
+         });
+},
+
+exports.delete = (urlSuffix, bodyData) => {
+  applyDefauls();
+
+  return new Promise((resolve, reject) => {
+            axios.delete(urlSuffix, bodyData)
+                 .then(response => {
+                    const {data, status}  = response
+                    resolve(data)
+               }).catch(err => {
+                    console.log(err);
+               })
+         });
+},
+
+exports.get = (urlSuffix, bodyData) => {
+  applyDefauls();
+
+  return new Promise((resolve, reject) => {
+      axios.get(urlSuffix, bodyData)
            .then(response => {
               const {data, status}  = response
-              let statusOK = status>=200 && status<300
-
-              resolve({"status":(statusOK?true:false), "data":data})
+              resolve(data)
          }).catch(err => {
-              resolve({"status":false, "data":err});
-         })
+              console.log(err);
+         });
    })
 }

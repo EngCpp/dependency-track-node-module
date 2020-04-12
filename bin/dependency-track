@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-
+const config = require("../utils/Configurations.js").defaultConfigs;
 const dependencyTrack = require("../index.js");
 const fs = require("fs");
 const path = require("path");
-const xmlFormat = require("prettify-xml");
-const xmlOptions = {indent: 4, newline: "\n"};
 
 const ARGS_WHITELIST = ["-h", "-u", "-d", "-f", "-m", "-s", "--version"]
 const CONFIGS_WHITELIST = ["--apiKey", "--dependencyTrackBaseUrl",
@@ -31,71 +29,56 @@ if (arguments.includes("-h") || arguments.length <= 0 || unknownOptions.length >
     process.exit(0);
 }
 
+
 // CONFIGS ---------------------------------------------------------------------
 
-let apiKey = arguments.indexOf("--apiKey");
-if (apiKey > -1) {
-  apiKey = arguments[apiKey + 1];
+const loadConfig = (textKey, arguments) => {
+  let keyIndex = arguments.indexOf(textKey);
+  if (keyIndex > -1) {
+     return arguments[keyIndex + 1];
+  }
+
+  return null;
 }
 
-let dependencyTrackBaseUrl = arguments.indexOf("--dependencyTrackBaseUrl");
-if (dependencyTrackBaseUrl > -1) {
-  dependencyTrackBaseUrl = arguments[dependencyTrackBaseUrl + 1];
-}
-
-let projectName = arguments.indexOf("--projectName");
-if (projectName > -1) {
-  projectName = arguments[projectName + 1];
-}
-
-let projectVersion = arguments.indexOf("--projectVersion");
-if (projectVersion > -1) {
-  projectVersion = arguments[projectVersion + 1];
-}
-
-let failOnError = arguments.indexOf("--failOnError");
-if (failOnError > -1) {
-  failOnError = arguments[failOnError + 1];
-} else {
-  failOnError = false
-}
+config.apiKey = loadConfig("--apiKey", arguments) || config.apiKey;
+config.baseUrl = loadConfig("--dependencyTrackBaseUrl", arguments) || config.baseUrl;
+config.projectName = loadConfig("--projectName", arguments) || config.projectName;
+config.projectVersion = loadConfig("--projectVersion", arguments) || config.projectVersion;
+config.failOnError = loadConfig("--failOnError", arguments) || config.failOnError;
 
 // OPTIONS --------------------------------------------------------------------
 
-let upload = arguments.indexOf("-u");
-if (upload > -1) {
-    arguments = arguments.slice(0,upload).concat(arguments.slice(upload+2));
-    dependencyTrack.uploadbom(dependencyTrackBaseUrl, apiKey, projectName,
-      projectVersion, () => {
-          console.log("file uploaded");
-      });
+let uploadIndex = arguments.indexOf("-u");
+if (uploadIndex > -1) {
+    config.bomFilepath = arguments[uploadIndex + 1] || config.bomFilepath;
+
+    dependencyTrack.uploadbom(response => {
+      console.log(JSON.stringify(response));
+    });
 }
 
 let delProject = arguments.indexOf("-d");
 if (delProject > -1) {
-    console.warn("Delete not implemented yet!")
-    arguments = arguments.slice(0,delProject).concat(arguments.slice(delProject+1));
+  dependencyTrack.deleteProject(response => {
+    console.log(`Project [${config.projectName} - ${config.projectVersion}] has been deleted`);
+  });
 }
 
 let findings = arguments.indexOf("-f");
 let out = null;
 if (findings > -1) {
     console.warn("Find not implemented yet!")
-    // extract argument
-    out = arguments[findings+1];
-    arguments = arguments.slice(0,findings).concat(arguments.slice(findings+2));
 }
 
 let metrics = arguments.indexOf("-m");
 if (metrics > -1) {
     console.warn("Metrics not implemented yet")
-    arguments = arguments.slice(0,metrics).concat(arguments.slice(metrics+1));
 }
 
 let score = arguments.indexOf("-s");
 while (score > -1) {
     console.warn("Score not implemented yet")
-    arguments = arguments.slice(0,score).concat(arguments.slice(score+2));
 }
 
 let printVersion = arguments.indexOf("--version");
@@ -106,5 +89,3 @@ if (printVersion > -1) {
     console.log(packageJson.version);
     process.exit(0);
 }
-
-let bomFile = arguments[0] || '.';
