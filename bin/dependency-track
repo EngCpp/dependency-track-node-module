@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const config = require("../utils/Configurations.js").defaultConfigs;
-const dependencyTrack = require("../index.js");
+const {config} = require("../utils/Configurations");
+const dependencyTrack = require("../index");
 const fs = require("fs");
 const path = require("path");
 
@@ -52,9 +52,8 @@ config.failOnError = loadConfig("--failOnError", arguments) || config.failOnErro
 let uploadIndex = arguments.indexOf("-u");
 if (uploadIndex > -1) {
     config.bomFilepath = arguments[uploadIndex + 1] || config.bomFilepath;
-
     dependencyTrack.uploadbom(response => {
-      console.log(JSON.stringify(response));
+      console.log("Bom file uploaded");
     });
 }
 
@@ -68,12 +67,16 @@ if (delProject > -1) {
 let findings = arguments.indexOf("-f");
 let out = null;
 if (findings > -1) {
-    console.warn("Find not implemented yet!")
+  dependencyTrack.findings(response => {
+    console.log(JSON.stringify(response, null, 2));
+  });
 }
 
 let metrics = arguments.indexOf("-m");
 if (metrics > -1) {
-    console.warn("Metrics not implemented yet")
+  dependencyTrack.metrics(response => {
+    console.log(JSON.stringify(response, null, 2));
+  });
 }
 
 let score = arguments.indexOf("-s");

@@ -2,20 +2,72 @@ const readInstalled = require('read-installed');
 const parsePackageJsonName = require('parse-packagejson-name');
 const ssri = require('ssri');
 const fs = require('fs');
-const PackageURL = require('packageurl-js');
+const packageURL = require('packageurl-js');
 const bomService = require('./services/BomService');
 const projectService = require('./services/ProjectService');
-const config = require('./utils/Configurations').defaultConfigs;
+const findingsService = require('./services/FindingsService');
+const metricsService = require('./services/MetricsService');
+const {config} = require('./utils/Configurations');
 const {showProgressBarAnimation} = require('./utils/MiscUtils')
+const {isEmpty} = require('./utils/StringUtils')
 
 const filterByProjectVersion = (projects) => {
   const {projectVersion} = config;
 
-  if (projects && projects.length > 0) {
-    return projects.find(p => p.version == projectVersion);
-  } else {
+  if (isEmpty(projects)) {
     return null;
   }
+
+  return projects.find(p => p.version == projectVersion);
+}
+
+const loadFile = (bomFilePath) => {
+  try {
+    return fs.readFileSync(bomFilePath, null, 'r');
+  } catch (ex) {
+    return null;
+  }
+}
+
+checkVulnerability = (level, response) => {
+  const {findingsThreshold} = config;
+  const threshold = findingsThreshold[level];
+
+  if (threshold >= 0 && response[level] >= threshold) {
+    throw new Error(`${response[level]} ${level} vulnerabilities found`);
+  }
+}
+
+const VULNERABILITY_LEVELS = ['critical', 'high', 'medium', 'low'];
+exports.metrics = async(callback) => {
+  const {projectName, projectVersion, findingsThreshold} = config
+  const projects = await projectService.findByName(projectName);
+  const project = filterByProjectVersion(projects);
+
+  if (isEmpty(project)) {
+    throw new Error(`Project [${projectName} - ${projectVersion}] not found`);
+  }
+
+  const response = await metricsService.findByProjectUuid(project.uuid);
+  for (key in VULNERABILITY_LEVELS) {
+    checkVulnerability(VULNERABILITY_LEVELS[key], response);
+  }
+
+  callback(response);
+}
+
+
+exports.findings = async(callback) => {
+  const {projectName, projectVersion} = config
+  const projects = await projectService.findByName(projectName);
+  const project = filterByProjectVersion(projects);
+
+  if (isEmpty(project)) {
+    throw new Error(`Project [${projectName} - ${projectVersion}] not found`);
+  }
+
+  const response = await findingsService.findByProjectUuid(project.uuid);
+  callback(response);
 }
 
 /**
@@ -26,15 +78,13 @@ exports.uploadbom = async(callback) => {
   const {bomFilepath, projectName, projectVersion, waitUntilBomProcessingComplete, failOnError} = config
 
   if (!fs.existsSync(bomFilepath)) {
-      console.log('Bom file does not exists.');
-      return;
+      throw new Error('Bom file not found.');
   }
 
-  const bomFileBuffer = fs.readFileSync(bomFilepath, '');
+  const bomFileBuffer = loadFile(bomFilepath);
 
-  if (!bomFileBuffer) {
-     console.log('Bom could not be loaded.');
-     return;
+  if (isEmpty(bomFileBuffer)) {
+     throw new Error('Bom could not be loaded.');
   }
 
   const base64BomFile = bomFileBuffer.toString('base64');
@@ -55,11 +105,10 @@ exports.deleteProject = async(callback) => {
   const projects = await projectService.findByName(projectName);
   const project = filterByProjectVersion(projects);
 
-  if (!project) {
-      console.log(`Project [${projectName} - ${projectVersion}] not found`);
-      return;
+  if (isEmpty(project)) {
+    throw new Error(`Project [${projectName} - ${projectVersion}] not found`);
   }
 
-  projectService.deleteByUuid(project.uuid)
-                .then(response => callback(response));
+  const response = await projectService.deleteByUuid(project.uuid);
+  callback(response);
 }

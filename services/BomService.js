@@ -1,6 +1,4 @@
-const FormData = require('form-data');
 const restService = require('./RestService');
-const config = require('../utils/Configurations');
 
 exports.upload = (projectUuid, base64BomFile) => {
     const urlPath = '/api/v1/bom';

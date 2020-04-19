@@ -22,6 +22,10 @@
     {
       "name": "Carlos Eduardo Rodrigues dos Santos",
       "email": "carlos@engcpp.com"
+    },
+    {
+      "name": "Kyle Yu",
+      "email": ""
     }
   ],
   "main": "index.js",
@@ -29,7 +33,7 @@
     "dependency-track": "bin/dependency-track"
   },
   "scripts": {
-    "test": "echo \"Warning: no test specified\" && exit 0"
+    "test": "mocha tests"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -43,7 +47,6 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "form-data": "^3.0.0",
     "packageurl-js": "^0.0.1",
     "parse-packagejson-name": "^1.0.1",
     "prettify-xml": "^1.2.0",
@@ -57,5 +60,9 @@
     "index.js",
     "bin/",
     "spdx-licenses.json"
-  ]
+  ],
+  "devDependencies": {
+    "mocha": "^7.1.1",
+    "nock": "^12.0.3"
+  }
 }

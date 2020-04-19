@@ -3,67 +3,34 @@
 * rest client like jquery, pure node http, ember data etc ..
 */
 const axios = require('axios');
-const config = require('../utils/Configurations').defaultConfigs;
+const {config} = require('../utils/Configurations');
 
 applyDefauls = () => {
   axios.defaults.baseURL = config.baseUrl;
   axios.defaults.headers.common['Content-Type'] = 'application/json';
   axios.defaults.headers.common['Accept'] =  'application/json';
   axios.defaults.headers.common['X-Api-Key'] = config.apiKey;
-}
+},
+
+rest = async(method, urlSuffix, bodyData) => {
+    applyDefauls();
+    const response = await axios({ method: method, url: urlSuffix, data: bodyData, timeout: 5000});
+    const {data, status}  = response;
+    return data;
+},
 
 exports.post = (urlSuffix, bodyData) => {
-  applyDefauls();
-
-  return new Promise((resolve, reject) => {
-            axios.post(urlSuffix, bodyData)
-                 .then(response => {
-                    const {data, status}  = response
-                    resolve(data)
-               }).catch(err => {
-                    console.log(err);
-               })
-         });
+  return rest('post', urlSuffix, bodyData);
 },
 
 exports.put = (urlSuffix, bodyData) => {
-  applyDefauls();
-
-  return new Promise((resolve, reject) => {
-            axios.put(urlSuffix, bodyData)
-                 .then(response => {
-                    const {data, status}  = response
-                    resolve(data)
-               }).catch(err => {
-                    console.log(err);
-               })
-         });
+  return rest('put', urlSuffix, bodyData);
 },
 
 exports.delete = (urlSuffix, bodyData) => {
-  applyDefauls();
-
-  return new Promise((resolve, reject) => {
-            axios.delete(urlSuffix, bodyData)
-                 .then(response => {
-                    const {data, status}  = response
-                    resolve(data)
-               }).catch(err => {
-                    console.log(err);
-               })
-         });
+  return rest('delete', urlSuffix, bodyData);
 },
 
 exports.get = (urlSuffix, bodyData) => {
-  applyDefauls();
-
-  return new Promise((resolve, reject) => {
-      axios.get(urlSuffix, bodyData)
-           .then(response => {
-              const {data, status}  = response
-              resolve(data)
-         }).catch(err => {
-              console.log(err);
-         });
-   })
+  return rest('get', urlSuffix, bodyData);
 }

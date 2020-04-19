@@ -17,6 +17,6 @@ exports.deleteByUuid = (projectUuid) => {
 }
 
 exports.isBeingProcessed = (token) => {
-  const urlPath = `/api//v1/bom/token/${token}`;
+  const urlPath = `/api/v1/bom/token/${token}`;
   return restService.get(urlPath, {});
 }

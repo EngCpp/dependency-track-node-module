@@ -1,4 +1,4 @@
-exports.defaultConfigs = {
+exports.config = {
   apiKey: '',
   baseUrl: '',
   projectName: '',
@@ -6,7 +6,7 @@ exports.defaultConfigs = {
   failOnError: false,
   bomFilepath: '.',
   waitUntilBomProcessingComplete: false,
-  findingThresholds: {
+  findingsThreshold: {
     critical: -1,
     high: -1,
     medium: -1,
