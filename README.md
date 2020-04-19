@@ -7,7 +7,8 @@ https://img.shields.io/npm/v/@dependency-track/bom)](https://www.npmjs.com/packa
 Depency Track Node.js Module
 =========
 
-Dependency Track module for Node.js upload a valid Software Bill-of-Materials (SBOM) containing an aggregate of all project dependencies. Dependency Track Node Module is easy integration with OWASP Dependency Track enabling your automation to be 100% written in javascript.
+**Dependency Track Node.js Module** makes integration with **OWASP Dependency Track** easier by enabling your pipeline automation to be 100% written in javascript.
+
 
 Requirements
 -------------------
