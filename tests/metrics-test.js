@@ -1,7 +1,7 @@
 const assert = require('assert');
 const scenarios = require('./mocks/scenarios');
 const dependencyTrack = require('../index');
-const {config} = require('../utils/Configurations');
+const {config} = require('../config');
 
 describe('Metrics', () => {
   beforeEach(() => {
@@ -39,14 +39,10 @@ describe('Metrics', () => {
     config.findingsThreshold.critical = 100;
     scenarios.metricsWithVulnerabilities();
 
-    try {
-      // Act
-      await dependencyTrack.metrics(()=>{});
-      assert.fail('Error expected');
-    } catch (e) {
-      // Assert
-      assert.equal(e.message, "100 critical vulnerabilities found");
-    }
+    // Act and Assert
+    await dependencyTrack.metrics().catch(e =>
+      assert.equal(e.message, "100 critical vulnerabilities found")
+    );
   });
 
   it('given 80 high vulnerabilities expect exception', async() => {
@@ -54,14 +50,10 @@ describe('Metrics', () => {
     config.findingsThreshold.high = 80;
     scenarios.metricsWithVulnerabilities();
 
-    try {
-      // Act
-      await dependencyTrack.metrics(()=>{});
-      assert.fail('Error expected');
-    } catch (e) {
-      // Assert
-      assert.equal(e.message, "80 high vulnerabilities found");
-    }
+    // Act and Assert
+    await dependencyTrack.metrics().catch(e =>
+      assert.equal(e.message, "80 high vulnerabilities found")
+    );
   });
 
   it('given 60 medium vulnerabilities expect exception', async() => {
@@ -69,14 +61,10 @@ describe('Metrics', () => {
     config.findingsThreshold.medium = 60;
     scenarios.metricsWithVulnerabilities();
 
-    try {
-      // Act
-      await dependencyTrack.metrics(()=>{});
-      assert.fail('Error expected');
-    } catch (e) {
-      // Assert
-      assert.equal(e.message, "60 medium vulnerabilities found");
-    }
+    // Act and Assert
+    await dependencyTrack.metrics().catch(e =>
+      assert.equal(e.message, "60 medium vulnerabilities found")
+    );
   });
 
   it('given 40 low vulnerabilities expect exception', async() => {
@@ -84,14 +72,10 @@ describe('Metrics', () => {
     config.findingsThreshold.low = 40;
     scenarios.metricsWithVulnerabilities();
 
-    try {
-      // Act
-      await dependencyTrack.metrics(()=>{});
-      assert.fail('Error expected');
-    } catch (e) {
-      // Assert
-      assert.equal(e.message, "40 low vulnerabilities found");
-    }
+    // Act and Assert
+    await dependencyTrack.metrics().catch(e =>
+      assert.equal(e.message, "40 low vulnerabilities found")
+    );
   });
 
   it('Happy path with vulnerabilities', () => {
@@ -131,28 +115,18 @@ describe('Metrics', () => {
 
   it('404 - Project not found', async() => {
     scenarios.metricsNotFound();
-
-    try {
-      // Act
-      await dependencyTrack.metrics(() => {});
-      assert.fail('Error expected');
-    } catch(e) {
-      // Assert
-      assert.equal(e.message, "Request failed with status code 404");
-    }
+    // Act and Assert
+    await dependencyTrack.metrics().catch(e =>
+      assert.equal(e.message, "Request failed with status code 404")
+    );
   });
 
   it('401 - Unauthorized', async() => {
     scenarios.metricsUnauthorized();
-
-    try {
-      // Act
-      await dependencyTrack.metrics(() => {});
-      assert.fail('Error expected');
-    } catch(e) {
-      // Assert
-      assert.equal(e.message, "Request failed with status code 401");
-    }
+    // Act and Assert
+    await dependencyTrack.metrics().catch(e =>
+      assert.equal(e.message, "Request failed with status code 401")
+    );
   });
 
 });

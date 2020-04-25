@@ -1,4 +1,4 @@
-const restService = require('./RestService');
+const restService = require('./rest-service');
 
 exports.upload = (projectUuid, base64BomFile) => {
     const urlPath = '/api/v1/bom';

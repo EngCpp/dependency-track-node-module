@@ -3,7 +3,7 @@ exports.config = {
   baseUrl: '',
   projectName: '',
   projectVersion: '',
-  failOnError: false,
+  failOnError: true,
   bomFilepath: '.',
   waitUntilBomProcessingComplete: false,
   findingsThreshold: {

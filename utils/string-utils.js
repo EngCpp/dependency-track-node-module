@@ -4,5 +4,7 @@ isEmpty = (value) => {
           typeof value == 'undefined' || value === null;
 }
 
+isNotEmpty = v => !isEmpty(v);
+
 exports.isEmpty = isEmpty
-exports.isNotEmpty = !isEmpty
+exports.isNotEmpty = isNotEmpty

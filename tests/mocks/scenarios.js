@@ -6,14 +6,12 @@ exports.resetMocks = () => {
 
 exports.uploadBomOK = () => {
     const tokenValue = "ABC-ABC-ABC-ABC-ABC";
-
     mockApis.mockPutBom(200, {"token": tokenValue});
     mockApis.mockBomIsProcessing(tokenValue, 200, {'processing': false});
 }
 
 exports.uploadBomNotFound = () => {
     const tokenValue = "ABC-ABC-ABC-ABC-ABC";
-
     mockApis.mockPutBom(404, "");
     mockApis.mockBomIsProcessing(tokenValue, 200, {'processing': false});
 }
@@ -24,7 +22,6 @@ exports.uploadBomUnauthorized = () => {
 
 exports.deleteProjectOK = () => {
   const projectUuid = 'XYZ-OPQ';
-
   mockApis.mockFindProjectByName('Dummy Project', 200, [{'uuid': projectUuid, 'version': '1.0'}]);
   mockApis.mockDeleteProjectByUuid(projectUuid, 200, "");
 }

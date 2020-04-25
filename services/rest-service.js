@@ -3,7 +3,7 @@
 * rest client like jquery, pure node http, ember data etc ..
 */
 const axios = require('axios');
-const {config} = require('../utils/Configurations');
+const {config} = require('../config');
 
 applyDefauls = () => {
   axios.defaults.baseURL = config.baseUrl;

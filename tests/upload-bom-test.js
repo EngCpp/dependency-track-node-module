@@ -1,7 +1,7 @@
 const assert = require('assert');
 const scenarios = require('./mocks/scenarios');
 const dependencyTrack = require('../index');
-const {config} = require('../utils/Configurations');
+const {config} = require('../config');
 
 describe('Upload Bill of materials (BOM)', () => {
 
@@ -18,10 +18,9 @@ describe('Upload Bill of materials (BOM)', () => {
     // Arrange
     scenarios.uploadBomOK();
 
-    // Act
-    dependencyTrack.uploadbom((response) => {
-        const {token} = response;
-        // Assert
+    // Act and Assert
+    dependencyTrack.uploadbom(resp => {
+        const {token} = resp;
         assert.equal("ABC-ABC-ABC-ABC-ABC", token);
     });
   });
@@ -29,27 +28,21 @@ describe('Upload Bill of materials (BOM)', () => {
   it('401 - Unauthorized', async() => {
     // Arrange
     scenarios.uploadBomUnauthorized();
-    try {
-      // Act
-      await dependencyTrack.uploadbom(() => {});
-      assert.fail('Error expected');
-    } catch(e) {
-      assert.equal(e.message, "Request failed with status code 401");
-    }
+
+    // Act and Assert
+    await dependencyTrack.uploadbom().catch(e =>
+      assert.equal(e.message, "Request failed with status code 401")
+    );
   });
 
   it('404 - The project could not found', async() => {
     // Arrange
     scenarios.uploadBomNotFound();
 
-    try {
-      // Act
-      const response = await dependencyTrack.uploadbom(() => {});
-      assert.fail('Error expected');
-    } catch(e) {
-      // Assert
-      assert.equal(e.message, "Request failed with status code 404");
-    }
+    // Act and Act
+    await dependencyTrack.uploadbom().catch(e =>
+      assert.equal(e.message, "Request failed with status code 404")
+    );
   });
 
   describe('Test misconfigured attributes', () => {
@@ -58,14 +51,10 @@ describe('Upload Bill of materials (BOM)', () => {
       scenarios.uploadBomOK();
       config.bomFilepath = './tests/bom.xml';
 
-      try {
-        // Act
-        await dependencyTrack.uploadbom(() => {});
-        assert.fail('Error expected');
-      } catch(e) {
-        // Assert
-        assert.equal(e.message, 'Bom file not found.');
-      }
+      // Act and Act
+      await dependencyTrack.uploadbom().catch(e =>
+        assert.equal(e.message, 'Bom file not found.')
+      );
     });
 
     it('Config.bomFilepath with path instead of file', async() => {
@@ -73,14 +62,10 @@ describe('Upload Bill of materials (BOM)', () => {
       scenarios.uploadBomOK();
       config.bomFilepath = './tests';
 
-      try {
-        // Act
-        await dependencyTrack.uploadbom(() => {});
-        assert.fail('Error expected');
-      } catch(e) {
-        // Assert
-        assert.equal(e.message, 'Bom could not be loaded.');
-      }
+      // Act and Assert
+      await dependencyTrack.uploadbom().catch(e =>
+        assert.equal(e.message, 'Bom could not be loaded.')
+      );
     });
 
     it('Config.baseUrl', async() => {
@@ -88,15 +73,10 @@ describe('Upload Bill of materials (BOM)', () => {
       scenarios.uploadBomOK();
       config.baseUrl = 'http://wrong-url.com.br';
 
-      try {
-        // Act
-        await dependencyTrack.uploadbom(()=>{});
-        assert.fail('Error expected');
-      } catch (e) {
-        // Assert
-        assert.equal(e.message, "getaddrinfo ENOTFOUND wrong-url.com.br wrong-url.com.br:80");
-      }
+      // Act and Assert
+      await dependencyTrack.uploadbom().catch (e =>
+        assert.equal(e.message, "getaddrinfo ENOTFOUND wrong-url.com.br wrong-url.com.br:80")
+      );
     });
   });
-
 });

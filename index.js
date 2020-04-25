@@ -3,13 +3,13 @@ const parsePackageJsonName = require('parse-packagejson-name');
 const ssri = require('ssri');
 const fs = require('fs');
 const packageURL = require('packageurl-js');
-const bomService = require('./services/BomService');
+const bomService = require('./services/bom-service');
 const projectService = require('./services/ProjectService');
-const findingsService = require('./services/FindingsService');
-const metricsService = require('./services/MetricsService');
-const {config} = require('./utils/Configurations');
-const {showProgressBarAnimation} = require('./utils/MiscUtils')
-const {isEmpty} = require('./utils/StringUtils')
+const findingsService = require('./services/findings-service');
+const metricsService = require('./services/metrics-service');
+const {config} = require('./config');
+const {showProgressBarAnimation} = require('./utils/misc-utils')
+const {isEmpty, isNotEmpty} = require('./utils/string-utils')
 
 const filterByProjectVersion = (projects) => {
   const {projectVersion} = config;
@@ -53,9 +53,10 @@ exports.metrics = async(callback) => {
     checkVulnerability(VULNERABILITY_LEVELS[key], response);
   }
 
-  callback(response);
+  if (isNotEmpty(callback)) {
+    callback(response);
+  }
 }
-
 
 exports.findings = async(callback) => {
   const {projectName, projectVersion} = config
@@ -67,7 +68,10 @@ exports.findings = async(callback) => {
   }
 
   const response = await findingsService.findByProjectUuid(project.uuid);
-  callback(response);
+
+  if (isEmpty(callback)) {
+    callback(response);
+  }
 }
 
 /**
@@ -97,7 +101,9 @@ exports.uploadbom = async(callback) => {
       await showProgressBarAnimation("Processing BOM:", 5000);
   }
 
-  callback({token});
+  if (isNotEmpty(callback)) {
+    callback({token});
+  }
 }
 
 exports.deleteProject = async(callback) => {
@@ -110,5 +116,8 @@ exports.deleteProject = async(callback) => {
   }
 
   const response = await projectService.deleteByUuid(project.uuid);
-  callback(response);
+
+  if (isNotEmpty(callback)) {
+    callback(response);
+  }
 }

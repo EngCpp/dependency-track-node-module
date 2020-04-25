@@ -1,4 +1,4 @@
-const restService = require('./RestService');
+const restService = require('./rest-service');
 const querystring = require('querystring');
 
 /**
