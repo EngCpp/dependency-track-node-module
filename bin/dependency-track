@@ -54,32 +54,34 @@ const act = {
     if (index > -1 && callback) {
         callback(index).catch(e => {
           const {failOnError} = config;
-
           console.log(e.message);
-
           if (failOnError) {
             console.log("Scripts will be terminated");
             process.exit(1);
           }
         });
     }
+    
     return act;
   }
 }
 
 act.when("-u", async(idx) => {
     config.bomFilepath = arguments[idx + 1] || config.bomFilepath;
-    dependencyTrack.uploadbom(resp => console.log("Bom file uploaded"));
+    await dependencyTrack.uploadbom();
+    console.log("Bom file uploaded")
 }).when("-d", async() => {
-    dependencyTrack.deleteProject(resp =>
-      console.log(`Project [${config.projectName} - ${config.projectVersion}] has been deleted`)
-    );
+    await dependencyTrack.deleteProject();
+    console.log(`Project [${config.projectName} - ${config.projectVersion}] has been deleted`)
 }).when("-f", async() => {
-    dependencyTrack.findings(resp => console.log(JSON.stringify(resp, null, 2)));
+    const response = dependencyTrack.findings();
+    console.log(JSON.stringify(response, null, 2));
 }).when("-m", async() => {
-    await dependencyTrack.metrics(resp => console.log(JSON.stringify(resp, null, 2)));
+    const response = await dependencyTrack.metrics();
+    console.log(JSON.stringify(response, null, 2));
 }).when("-s", async() => {
-    dependencyTrack.metrics(resp => console.log(resp.inheritedRiskScore));
+    const response = dependencyTrack.metrics();
+    console.log(resp.inheritedRiskScore);
 }).when("--version", async() => {
     const packageJsonAsString = fs.readFileSync(path.join(__dirname, '../', 'package.json'), "utf-8");
     const packageJson = JSON.parse(packageJsonAsString);

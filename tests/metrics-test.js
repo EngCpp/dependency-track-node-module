@@ -19,19 +19,18 @@ describe('Metrics', () => {
     scenarios.resetMocks();
   });
 
-  it('Happy path', () => {
+  it('Happy path', async() => {
     // Arrange
     scenarios.metricsWithoutVulnerabilities();
 
     // Act
-    dependencyTrack.metrics(response => {
-      const {critical, high, medium, low} = response;
+    const response = await dependencyTrack.metrics();
+    const {critical, high, medium, low} = response;
 
-      assert.equal(critical, 0);
-      assert.equal(high, 0);
-      assert.equal(medium, 0);
-      assert.equal(low, 0);
-    });
+    assert.equal(critical, 0);
+    assert.equal(high, 0);
+    assert.equal(medium, 0);
+    assert.equal(low, 0);
   });
 
   it('given 100 critical vulnerabilities expect exception', async() => {
@@ -78,19 +77,19 @@ describe('Metrics', () => {
     );
   });
 
-  it('Happy path with vulnerabilities', () => {
+  it('Happy path with vulnerabilities', async() => {
     // Arrange
     scenarios.metricsWithVulnerabilities();
 
     // Act
-    dependencyTrack.metrics(response => {
-      const {critical, high, medium, low} = response;
+    const response = await dependencyTrack.metrics();
+    const {critical, high, medium, low} = response;
 
-      assert.equal(critical, 100);
-      assert.equal(high, 80);
-      assert.equal(medium, 60);
-      assert.equal(low, 40);
-    });
+    // Assert
+    assert.equal(critical, 100);
+    assert.equal(high, 80);
+    assert.equal(medium, 60);
+    assert.equal(low, 40);
   });
 
   it('given vulnerabilities havent reach the threshold expect to continue', async() => {
@@ -102,15 +101,14 @@ describe('Metrics', () => {
     config.findingsThreshold.low = 41;
 
     // Act
-    await dependencyTrack.metrics(response => {
-      const {critical, high, medium, low} = response;
-    // Assert
-      assert.equal(critical, 100);
-      assert.equal(high, 80);
-      assert.equal(medium, 60);
-      assert.equal(low, 40);
-    });
+    const response = await dependencyTrack.metrics();
+    const {critical, high, medium, low} = response;
 
+    // Assert
+    assert.equal(critical, 100);
+    assert.equal(high, 80);
+    assert.equal(medium, 60);
+    assert.equal(low, 40);
   });
 
   it('404 - Project not found', async() => {

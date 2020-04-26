@@ -14,12 +14,13 @@ describe('Delete project', () => {
     scenarios.resetMocks();
   });
 
-  it('Happy path', () => {
+  it('Happy path', async() => {
     // Arrange
     scenarios.deleteProjectOK();
 
     // Act and Assert
-    dependencyTrack.deleteProject((response) => assert.equal("", response));
+    const response = await dependencyTrack.deleteProject();
+    assert.equal("", response);
   });
 
   it('[] - Project not found', async() => {

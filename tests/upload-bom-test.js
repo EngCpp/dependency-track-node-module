@@ -14,15 +14,13 @@ describe('Upload Bill of materials (BOM)', () => {
     scenarios.resetMocks();
   });
 
-  it('Happy path', () => {
+  it('Happy path', async() => {
     // Arrange
     scenarios.uploadBomOK();
 
     // Act and Assert
-    dependencyTrack.uploadbom(resp => {
-        const {token} = resp;
-        assert.equal("ABC-ABC-ABC-ABC-ABC", token);
-    });
+    const response = await dependencyTrack.uploadbom();
+    assert.equal("ABC-ABC-ABC-ABC-ABC", response.token);
   });
 
   it('401 - Unauthorized', async() => {

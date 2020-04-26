@@ -4,7 +4,7 @@ const ssri = require('ssri');
 const fs = require('fs');
 const packageURL = require('packageurl-js');
 const bomService = require('./services/bom-service');
-const projectService = require('./services/ProjectService');
+const projectService = require('./services/project-service');
 const findingsService = require('./services/findings-service');
 const metricsService = require('./services/metrics-service');
 const {config} = require('./config');
@@ -53,9 +53,7 @@ exports.metrics = async(callback) => {
     checkVulnerability(VULNERABILITY_LEVELS[key], response);
   }
 
-  if (isNotEmpty(callback)) {
-    callback(response);
-  }
+  return response;
 }
 
 exports.findings = async(callback) => {
@@ -67,18 +65,14 @@ exports.findings = async(callback) => {
     throw new Error(`Project [${projectName} - ${projectVersion}] not found`);
   }
 
-  const response = await findingsService.findByProjectUuid(project.uuid);
-
-  if (isEmpty(callback)) {
-    callback(response);
-  }
+  return await findingsService.findByProjectUuid(project.uuid);
 }
 
 /**
 * uploadbom will orchestrate all the calls required to upload a bom file to
 * Dependency Track
 */
-exports.uploadbom = async(callback) => {
+exports.uploadbom = async() => {
   const {bomFilepath, projectName, projectVersion, waitUntilBomProcessingComplete, failOnError} = config
 
   if (!fs.existsSync(bomFilepath)) {
@@ -92,7 +86,8 @@ exports.uploadbom = async(callback) => {
   }
 
   const base64BomFile = bomFileBuffer.toString('base64');
-  const {token} = await bomService.upload(projectName, projectVersion, base64BomFile);
+  const response = await bomService.upload(projectName, projectVersion, base64BomFile);
+  const {token} = response;
 
   let isBeingProcessed = true;
   while (waitUntilBomProcessingComplete && isBeingProcessed) {
@@ -101,12 +96,10 @@ exports.uploadbom = async(callback) => {
       await showProgressBarAnimation("Processing BOM:", 5000);
   }
 
-  if (isNotEmpty(callback)) {
-    callback({token});
-  }
+  return response;
 }
 
-exports.deleteProject = async(callback) => {
+exports.deleteProject = async() => {
   const {projectName, projectVersion} = config
   const projects = await projectService.findByName(projectName);
   const project = filterByProjectVersion(projects);
@@ -115,9 +108,5 @@ exports.deleteProject = async(callback) => {
     throw new Error(`Project [${projectName} - ${projectVersion}] not found`);
   }
 
-  const response = await projectService.deleteByUuid(project.uuid);
-
-  if (isNotEmpty(callback)) {
-    callback(response);
-  }
+  return await projectService.deleteByUuid(project.uuid);
 }
