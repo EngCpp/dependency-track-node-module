@@ -61,7 +61,7 @@ const act = {
           }
         });
     }
-    
+
     return act;
   }
 }
