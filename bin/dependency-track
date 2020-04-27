@@ -1,6 +1,10 @@
 #!/usr/bin/env node
+/**
+* This files is meant to give a CLI behavior (options/fuctionality) to this plugin
+*/
 const {config} = require("../config");
 const {isEmpty} = require("../utils/string-utils");
+const {loadConfig, ActionMenu} = require("../utils/misc-utils");
 const dependencyTrack = require("../index");
 const fs = require("fs");
 const path = require("path");
@@ -10,35 +14,8 @@ const CONFIGS_WHITELIST = ["--apiKey", "--dependencyTrackBaseUrl",
 "--projectName", "--projectVersion", "--failOnError"]
 
 let arguments = process.argv.slice(2);
-let unknownOptions = arguments.filter(x => x.startsWith("-")).filter(x =>
-  !( ARGS_WHITELIST.includes(x) || CONFIGS_WHITELIST.includes(x) )
-);
-
-if (arguments.includes("-h") || arguments.length <= 0 || unknownOptions.length > 0) {
-    if (unknownOptions.length > 0) {
-        console.warn("ERROR: Unknown option(s) " + unknownOptions.join(" ") );
-    }
-    console.log("Usage:  dependency-track [OPTIONS] [path]");
-    console.log("Options:");
-    console.log("  -h        - this help");
-    console.log("  -u        - upload the bom");
-    console.log("  -d        - delete, delete the current or any arbitrary project from the server");
-    console.log("  -f        - findings, prints out some details of all of the current issues found in the scan");
-    console.log("  -m        - metrics, Get and print all metrics from the server");
-    console.log("  -s        - score, Get the Risk Score for the current project");
-    console.log("  --version - print version number");
-    process.exit(0);
-}
 
 // CONFIGS ---------------------------------------------------------------------
-const loadConfig = (textKey, arguments) => {
-  let keyIndex = arguments.indexOf(textKey);
-  if (keyIndex > -1) {
-     return arguments[keyIndex + 1];
-  }
-
-  return null;
-}
 
 config.apiKey = loadConfig("--apiKey", arguments) || config.apiKey;
 config.baseUrl = loadConfig("--dependencyTrackBaseUrl", arguments) || config.baseUrl;
@@ -46,27 +23,30 @@ config.projectName = loadConfig("--projectName", arguments) || config.projectNam
 config.projectVersion = loadConfig("--projectVersion", arguments) || config.projectVersion;
 config.failOnError = loadConfig("--failOnError", arguments) || config.failOnError || false;
 
-// OPTIONS --------------------------------------------------------------------
-const act = {
-  when: (actionArg, callback) => {
-    const index = arguments.indexOf(actionArg);
+// OPTIONS ---------------------------------------------------------------------
+new ActionMenu(arguments).help(() => {
+    let unknownOptions = arguments.filter(x => x.startsWith("-")).filter(x =>
+     !( ARGS_WHITELIST.includes(x) || CONFIGS_WHITELIST.includes(x) )
+    );
 
-    if (index > -1 && callback) {
-        callback(index).catch(e => {
-          const {failOnError} = config;
-          console.log(e.message);
-          if (failOnError) {
-            console.log("Scripts will be terminated");
-            process.exit(1);
-          }
-        });
+    if (arguments.includes("-h") || arguments.length <= 0 || unknownOptions.length > 0) {
+       if (unknownOptions.length > 0) {
+           console.warn("ERROR: Unknown option(s) " + unknownOptions.join(" ") );
+       }
+       console.log("Usage:  dependency-track [OPTIONS] [path]");
+       console.log("Options:");
+       console.log("  -h        - this help");
+       console.log("  -u        - upload the bom");
+       console.log("  -d        - delete, delete the current or any arbitrary project from the server");
+       console.log("  -f        - findings, prints out some details of all of the current issues found in the scan");
+       console.log("  -m        - metrics, Get and print all metrics from the server");
+       console.log("  -s        - score, Get the Risk Score for the current project");
+       console.log("  --version - print version number");
+       process.exit(0);
     }
-
-    return act;
-  }
-}
-
-act.when("-u", async(idx) => {
+}).when("-h", async(self) => {
+    self.help();
+}).when("-u", async(self, idx) => {
     config.bomFilepath = arguments[idx + 1] || config.bomFilepath;
     await dependencyTrack.uploadbom();
     console.log("Bom file uploaded")
