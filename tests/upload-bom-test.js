@@ -73,7 +73,7 @@ describe('Upload Bill of materials (BOM)', () => {
 
       // Act and Assert
       await dependencyTrack.uploadbom().catch (e =>
-        assert.equal(e.message, "getaddrinfo ENOTFOUND wrong-url.com.br wrong-url.com.br:80")
+        assert(e.message.startsWith("getaddrinfo ENOTFOUND wrong-url.com.br"))
       );
     });
   });

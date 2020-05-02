@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/Engcpp/dependency-track-node-module/workflows/Node%20CI/badge.svg)](https://github.com/Engcpp/dependecy-track-node-module/actions?workflow=Node+CI)
+![Node.js CI](https://github.com/EngCpp/dependency-track-node-module/workflows/Node.js%20CI/badge.svg)
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)][License]
 [![Latest](
 https://img.shields.io/npm/v/@dependency-track/bom)](https://www.npmjs.com/package/@dependency-track/bom)
