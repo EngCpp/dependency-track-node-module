@@ -1,9 +1,9 @@
 {
   "name": "@dependency-track/bom",
-  "version": "1.1.3",
+  "version": "1.0.1",
   "description": "Upload Bill-of-Materials (BOM) to dependency track",
-  "homepage": "http://github.com/EngcCppp/dependency-track-node-module",
-  "author": "Carlos Eduardo Rodrigues dos Santos",
+  "homepage": "https://github.com/EngCpp/dependency-track-node-module",
+  "author": "Carlos Eduardo R. dos Santos",
   "license": "Apache-2.0",
   "keywords": [
     "sbom",
@@ -23,10 +23,6 @@
     {
       "name": "Carlos Eduardo Rodrigues dos Santos",
       "email": "carlos@engcpp.com"
-    },
-    {
-      "name": "Kyle Yu",
-      "email": ""
     }
   ],
   "main": "index.js",
@@ -41,7 +37,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EngCpp/depenency-track-node-module.git"
+    "url": "https://github.com/EngCpp/dependency-track-node-module.git"
   },
   "bugs": {
     "url": "https://github.com/EngCpp/dependency-track-node-module/issues"
@@ -56,8 +52,12 @@
   },
   "files": [
     "index.js",
+    "config.js",
     "bin/",
-    "spdx-licenses.json"
+    "services/",
+    "utils/",
+    "tests/",
+    "demo/"
   ],
   "devDependencies": {
     "mocha": "^7.1.1",

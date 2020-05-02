@@ -43,8 +43,8 @@ Options:
 |----------------------|--------|---------------------|
 |dependencyTrackBaseUrl|true    |N/A                  |
 |apiKey                |true    |N/A                  |
-|projectName           |false   |${project.artifactId}|
-|projectVersion        |false   |${project.version}   |
+|projectName           |true    |N/A                  |
+|projectVersion        |true    |N/A                  |
 |failOnError           |false   |false                |  
 |waitUntilBomProcessingComplete|false|false           |
 
