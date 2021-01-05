@@ -43,7 +43,7 @@
     "url": "https://github.com/EngCpp/dependency-track-node-module/issues"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "packageurl-js": "^0.0.1",
     "parse-packagejson-name": "^1.0.1",
     "read-installed": "^4.0.3",
