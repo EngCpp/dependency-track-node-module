@@ -47,7 +47,7 @@
     "packageurl-js": "^0.0.1",
     "parse-packagejson-name": "^1.0.1",
     "read-installed": "^4.0.3",
-    "ssri": "^6.0.0",
+    "ssri": "^8.0.1",
     "uuid": "^3.3.2"
   },
   "files": [
