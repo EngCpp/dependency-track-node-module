@@ -4,7 +4,7 @@
 https://img.shields.io/npm/v/@dependency-track/bom)](https://www.npmjs.com/package/@dependency-track/bom)
 
 
-Depency Track Node.js Module
+Dependency Track Node.js Module
 =========
 
 **Dependency Track Node.js Module** makes integration with **OWASP Dependency Track** easier by enabling your pipeline automation to be 100% written in javascript.
@@ -20,7 +20,7 @@ Usage
 #### Installing
 
 ```bash
-npm install -g @dependecy-track/bom
+npm install -g @dependency-track/bom
 ```
 
 #### Getting Help
