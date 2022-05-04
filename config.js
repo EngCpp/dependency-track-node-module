@@ -5,6 +5,7 @@ exports.config = {
   projectVersion: '',
   failOnError: true,
   bomFilepath: '.',
+  batchMode: false,
   waitUntilBomProcessingComplete: false,
   findingsThreshold: {
     critical: -1,
