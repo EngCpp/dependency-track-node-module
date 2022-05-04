@@ -45,7 +45,8 @@ Options:
 |apiKey                |true    |N/A                  |
 |projectName           |true    |N/A                  |
 |projectVersion        |true    |N/A                  |
-|failOnError           |false   |false                |  
+|failOnError           |false   |false                |
+|batchMode             |false   |false                |
 |waitUntilBomProcessingComplete|false|false           |
 
 #### Example

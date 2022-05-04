@@ -8,7 +8,7 @@ const projectService = require('./services/project-service');
 const findingsService = require('./services/findings-service');
 const metricsService = require('./services/metrics-service');
 const {config} = require('./config');
-const {showProgressBarAnimation} = require('./utils/misc-utils')
+const {showProgressBarAnimation, sleep} = require('./utils/misc-utils')
 const {isEmpty, isNotEmpty} = require('./utils/string-utils')
 
 const filterByProjectVersion = (projects) => {
@@ -73,7 +73,7 @@ exports.findings = async(callback) => {
 * Dependency Track
 */
 exports.uploadbom = async() => {
-  const {bomFilepath, projectName, projectVersion, waitUntilBomProcessingComplete, failOnError} = config
+  const {bomFilepath, projectName, projectVersion, waitUntilBomProcessingComplete, batchMode, failOnError} = config
 
   if (!fs.existsSync(bomFilepath)) {
       throw new Error('Bom file not found.');
@@ -93,7 +93,11 @@ exports.uploadbom = async() => {
   while (waitUntilBomProcessingComplete && isBeingProcessed) {
       const bomProcessedResponse = await bomService.isBeingProcessed(token);
       isBeingProcessed = bomProcessedResponse.processing;
-      await showProgressBarAnimation("Processing BOM:", 5000);
+      if (!batchMode) {
+        await showProgressBarAnimation("Processing BOM:", 5000);
+      } else {
+        await sleep(5000);
+      }
   }
 
   return response;
